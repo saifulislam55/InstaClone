@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>InstaClone - Reels</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      overflow: hidden;
+    }
+    main {
+      height: 100vh;
+      overflow-y: scroll;
+      scroll-snap-type: y mandatory;
+      color:  white;
+
+    }
+    section {
+      scroll-snap-align: start;
+    }
+  </style>
+</head>
+<body>
+
+
+
+
+  {% include 'sidebar.html' %}
+
+  <main class="md:ml-60">
+
+  {% for r in reels %}
+  <section class="h-screen relative group">
+    <video class="reel-video w-full h-full object-cover" autoplay loop muted playsinline>
+      <source src="{{ r.reel_file.url }}" type="video/mp4" />
+    </video>
+
+    <!-- Audio toggle -->
+    <button class="audio-toggle absolute top-4 right-5 bg-black bg-opacity-50 p-2 rounded-full">
+      <i data-lucide="volume-x" class="w-5 h-5 text-white"></i>
+    </button>
+
+    <!-- User & caption -->
+    <div class="absolute bottom-10 left-5">
+      <h3 class="font-bold text-lg"><a href="{% url 'profile' user.username %}">@{{r.user.username}}</a></h3>
+      <p class="text-sm">{{ r.caption }}</p>
+    </div>
+
+
+    <!-- Buttons -->
+<div class="absolute bottom-10 right-5 flex items-center space-x-4 text-center">
+  <form action="{% url 'like_reel' r.id %}" method="POST" class="flex items-center">
+    {% csrf_token %}
+    {% if request.user in r.like.all %}
+      <button type="submit">
+        <i data-lucide="heart" class="w-6 h-6 fill-[#6d28d2]"></i>
+      </button>
+    {% else %}
+      <button type="submit" class="text-[#6d28d2]">
+        <i data-lucide="heart" class="w-6 h-6"></i>
+      </button>
+    {% endif %}
+  </form>
+
+
+  <!-- Comment Icon button -->
+<a href="#commentModal" class="flex items-center">
+  <i data-lucide="message-circle" class="w-6 h-6"></i>
+</a>
+
+<!-- Modal (appears when URL has #commentModal) -->
+<div id="commentModal" 
+     class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 opacity-0 pointer-events-none transition"
+>
+  <div class="bg-white w-96 rounded-xl p-6 shadow-lg relative">
+
+    <!-- Close button -->
+    <a href="#" class="absolute top-3 right-3 text-gray-500 hover:text-red-500">
+      <i data-lucide="x" class="w-5 h-5"></i>
+    </a>
+
+    <!-- Comments Section -->
+    <h2 class="text-lg font-semibold mb-4 text-center">Comments</h2>
+
+    <div class="space-y-2 max-h-40 overflow-y-auto mb-4">
+      {% for comment in comments %}
+        <p class="text-sm text-gray-800 border-b pb-1">{{ comment.text }}</p>
+      {% empty %}
+        <p class="text-sm text-gray-500">No comments yet.</p>
+      {% endfor %}
+    </div>
+
+    <!-- Add new comment -->
+    <form method="post" >
+      {% csrf_token %}
+      <textarea 
+       {{ form.content }}
+      ></textarea>
+
+      <button type="submit"
+        class="mt-4 w-full bg-[#6d28d2] hover:bg-[#5b21b6] text-white px-4 py-2 rounded-lg"
+      >
+        Post Comment
+      </button>
+    </form>
+
+  </div>
+</div>
+
+<!-- Tiny CSS for pure HTML modal toggle -->
+<style>
+  /* Show modal only when target */
+  #commentModal:target {
+    opacity: 1;
+    pointer-events: auto;
+  }
+</style>
+
+<script>
+  lucide.createIcons();
+</script>
+
+
+
+   
+  </section>
+  {% empty %}
+  <section class="h-screen flex items-center justify-center">
+    <p>No reels found.</p>
+  </section>
+  {% endfor %}
+</main>
+
+
+<!-- Scripts -->
+
+<script>
+  lucide.createIcons();
+  // handle audio toggle
+  document.querySelectorAll(".audio-toggle").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const currentVideo = btn.closest("section").querySelector("video");
+      document.querySelectorAll("video").forEach((video) => {
+        if (video !== currentVideo) {
+          video.muted = true;
+          const iconBtn = video.closest("section").querySelector(".audio-toggle");
+          if (iconBtn) iconBtn.innerHTML = `<i data-lucide="volume-x" class="w-5 h-5 text-white"></i>`;
+        }
+      });
+      currentVideo.muted = !currentVideo.muted;
+      const iconName = currentVideo.muted ? "volume-x" : "volume-2";
+      btn.innerHTML = `<i data-lucide="${iconName}" class="w-5 h-5 text-white"></i>`;
+      lucide.createIcons();
+    });
+  });
+</script>
+
+
+</body>
+</html>

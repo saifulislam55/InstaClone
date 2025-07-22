@@ -1,0 +1,269 @@
+    <!-- Sidebar -->
+    <aside class="hidden md:flex flex-col justify-between w-60 h-screen bg-white border-r p-6 fixed">
+      <div>
+            <!-- Logo -->
+    <h1 class="text-2xl font-bold text-[#6d28d2] mb-12 flex items-center gap-2">
+    <i data-lucide="aperture" class="w-6 h-6"></i> <a href="{% url 'home' %}">InstaClone</a>
+    </h1>
+
+    <!-- End Logo -->
+        <nav class="space-y-6 text-lg font-medium">
+          <a href="{% url 'home' %}" class="hover:text-[#6d28d2] flex items-center gap-3">
+            <i data-lucide="home" class="w-5 h-5"></i> Home
+          </a>
+
+
+                   <li onclick="openSearchModal()" class="cursor-pointer flex items-center gap-3 text-gray-700 hover:">
+  <i data-lucide="search" class="w-5 h-5"></i>
+  <span class="text-lg  tracking-wide">Search</span>
+</li>
+
+
+
+          
+          <a href="{% url 'explore' %}" class="hover:text-[#6d28d2] flex items-center gap-3">
+            <i data-lucide="compass" class="w-5 h-5"></i> Explore
+          </a>
+          <a href="#" class="hover:text-[#6d28d2] flex items-center gap-3">
+            <i data-lucide="message-circle" class="w-5 h-5"></i> Messages
+          </a>
+          <a href="reels.html" class="hover:text-[#6d28d2] flex items-center gap-3">
+            <i data-lucide="clapperboard" class="w-5 h-5"></i> Reel
+          </a>
+          <!-- Upload Link -->
+           <a href="#" id="uploadBtn" class="hover:text-[#6d28d2] flex items-center gap-3">
+             <i data-lucide="upload-cloud" class="w-5 h-5"></i> Upload</a>
+
+         
+             <a href="#" onclick="toggleSidebar()" class="hover:text-[#6d28d2] flex items-center gap-3">
+  <i data-lucide="bell" class="w-5 h-5"></i> Notifications
+</a>
+
+       <a href="{% url 'profile' request.user.username %}" class="hover:text-[#6d28d2] flex items-center gap-3">
+    {% if request.user.profile.profile_image %} 
+        <img src="{{ request.user.profile.profile_image.url }}" alt="Profile" class="w-6 h-6 rounded-full object-cover" />
+        Profile
+    {% else %}
+        <i data-lucide="user" class="w-5 h-5"></i> Profile
+    {% endif %}
+</a>
+
+        </nav>
+      </div>
+
+      <div>
+        <a href="{% url 'logout' %}" class="text-red-500 flex items-center gap-3">
+          <i data-lucide="log-out" class="w-5 h-5"></i> Logout
+        </a>
+      </div>
+    </aside>
+
+
+
+
+    <!-- Search Modal -->
+<div id="searchModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center">
+  <div class="bg-white rounded-xl shadow-lg w-full max-w-xl p-6 relative">
+
+    <!-- Close Button -->
+    <button onclick="closeSearchModal()" class="absolute top-4 right-4 text-gray-500 hover:text-[#6d28d2]">
+      <i data-lucide="x" class="w-5 h-5"></i>
+    </button>
+
+    <!-- Heading -->
+    <h2 class="text-xl font-semibold mb-4 text-gray-800 text-center">Search</h2>
+
+    <!-- Search Form -->
+    <form action="{% url 'search' %}" method="GET">
+      {% csrf_token %}
+      <div class="flex overflow-hidden rounded-full shadow-sm border border-gray-300">
+        <div class="relative flex-1">
+          <input
+            type="text"
+            name="keyword"
+            placeholder="Search users, posts, or tags..."
+            class="w-full py-3 pl-12 pr-4 text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#6d28d2] border-none"
+            required
+          />
+          <div class="absolute left-4 top-3 text-gray-400">
+            <i data-lucide="search" class="w-5 h-5"></i>
+          </div>
+        </div>
+        <button type="submit" class="bg-[#6d28d2] hover:bg-[#4c1d95] text-white font-semibold px-6 py-3 rounded-l-none rounded-r-full transition duration-150">
+          Search
+        </button>
+      </div>
+    </form>
+
+    <!-- Results -->
+    <div class="mt-6 text-center text-gray-500 text-sm">
+      Start typing to see results...
+    </div>
+
+  </div>
+</div>
+
+
+
+<!-- Upload Type Selector Modal -->
+<div id="uploadTypeModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center hidden z-50">
+  <div class="bg-white rounded-lg w-80 p-6 text-center space-y-4">
+    <h2 class="text-xl font-semibold text-[#6d28d2] mb-2">What would you like to upload?</h2>
+    <button onclick="openUploadForm('post')" class="w-full bg-[#6d28d2] text-white py-2 rounded-lg">Upload Post</button>
+    <button onclick="openUploadForm('reel')" class="w-full bg-[#6d28d2] text-white py-2 rounded-lg">Upload Reel</button>
+    <button  class="w-full bg-[#6d28d2] text-white py-2 rounded-lg"><a href="{% url 'story_upload' %}">Upload Story</a></button>
+    <button onclick="closeTypeModal()" class="text-[#6d28d2]">Cancel</button>
+  </div>
+</div>
+
+<!-- Upload Modal (Post by default) -->
+<div id="uploadModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center hidden z-50">
+  <div class="bg-white rounded-lg w-96 p-6">
+    <h2 id="uploadModalTitle" class="text-2xl font-semibold text-center mb-4 text-[#6d28d2]">Upload Post</h2>
+
+    <form action="{% url 'home' %}" method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+      {% if form.non_field_errors %}
+        <div class="text-red-500 mb-2 text-sm">
+          {{ form.non_field_errors }}
+        </div>
+      {% endif %}
+
+      <!-- Caption Field -->
+      <div class="mb-4">
+        <label for="caption" class="block text-sm font-medium text-[#6d28d2]">Caption</label>
+        <input 
+          type="text" 
+          name="caption" 
+          id="caption"
+          class="w-full border border-gray-300 p-2 rounded-md"
+          placeholder="Write a caption..."
+          value="{{ form.caption.value|default_if_none:'' }}"
+        />
+        {% if form.caption.errors %}
+          <p class="text-sm text-red-500 mt-1">{{ form.caption.errors.0 }}</p>
+        {% endif %}
+      </div>
+
+      <!-- File Upload Field -->
+      <div class="mb-4">
+        <label for="post_file" class="block text-sm font-medium text-[#6d28d2]">Choose Media</label>
+        <input 
+          type="file" 
+          name="post_file" 
+          id="post_file"
+          class="mt-1 block w-full text-sm text-gray-900 border border-gray-300 rounded-lg p-2.5"
+          required
+        />
+        {% if form.post_file.errors %}
+          <p class="text-sm text-red-500 mt-1">{{ form.post_file.errors.0 }}</p>
+        {% endif %}
+      </div>
+
+      <!-- Buttons -->
+      <div class="flex justify-between items-center">
+        <button type="submit" class="bg-[#6d28d2] text-white px-6 py-2 rounded-lg">Upload</button>
+        <button type="button" class="text-[#6d28d2]" onclick="closeModal()">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+
+<!-- Sidebar Notification Drawer -->
+<div id="notificationSidebar" class="fixed top-0 left-0 w-72 md:w-96 h-full bg-white shadow-lg border-r z-50 transform -translate-x-full transition-transform duration-300">
+  <div class="flex justify-between items-center p-4 border-b">
+    <h2 class="text-lg font-semibold">Notifications</h2>
+    <button onclick="toggleSidebar()" class="text-gray-500 hover:text-gray-800">
+      <i data-lucide="x" class="w-5 h-5"></i>
+    </button>
+  </div>
+
+  <!-- Notifications List -->
+  <div class="p-4 space-y-4 overflow-y-auto h-[calc(100%-60px)]">
+    <div class="flex items-center">
+      <img src="https://i.pravatar.cc/40" class="w-10 h-10 rounded-full mr-3">
+      <div>
+        <p class="text-sm"><strong>Ali</strong> liked your post</p>
+        <span class="text-xs text-gray-500">2h ago</span>
+      </div>
+    </div>
+
+    <!-- More notifications here -->
+  </div>
+</div>
+
+<!-- Background Overlay -->
+<div id="sidebarOverlay" class="fixed inset-0 bg-black bg-opacity-30 hidden z-40" onclick="toggleSidebar()"></div>
+
+
+<script>
+
+    lucide.createIcons();
+
+
+  function openSearchModal() {
+    document.getElementById('searchModal').classList.remove('hidden');
+    lucide.createIcons(); // Re-render icons
+  }
+
+  function closeSearchModal() {
+    document.getElementById('searchModal').classList.add('hidden');
+  }
+
+  // Render Lucide icons
+  lucide.createIcons();
+
+</script>
+
+<!-- JavaScript -->
+<script>
+  const uploadBtn = document.getElementById('uploadBtn');
+  const uploadTypeModal = document.getElementById('uploadTypeModal');
+  const uploadModal = document.getElementById('uploadModal');
+  const uploadModalTitle = document.getElementById('uploadModalTitle');
+
+  uploadBtn.addEventListener('click', () => {
+    uploadTypeModal.classList.remove('hidden');
+  });
+
+  function openUploadForm(type) {
+    uploadTypeModal.classList.add('hidden');
+    uploadModal.classList.remove('hidden');
+
+    if (type === 'post') {
+      uploadModalTitle.innerText = 'Upload Post';
+    } else if (type === 'reel') {
+      uploadModalTitle.innerText = 'Upload Reel';
+    } else if (type === 'story') {
+      uploadModalTitle.innerText = 'Upload Story';
+    }
+  }
+
+  function closeTypeModal() {
+    uploadTypeModal.classList.add('hidden');
+  }
+
+  function closeModal() {
+    uploadModal.classList.add('hidden');
+  }
+</script>
+
+
+<script>
+  function toggleSidebar() {
+    const sidebar = document.getElementById('notificationSidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+
+    const isOpen = sidebar.classList.contains('translate-x-0');
+
+    if (isOpen) {
+      sidebar.classList.replace('translate-x-0', '-translate-x-full');
+      overlay.classList.add('hidden');
+    } else {
+      sidebar.classList.replace('-translate-x-full', 'translate-x-0');
+      overlay.classList.remove('hidden');
+    }
+  }
+</script>

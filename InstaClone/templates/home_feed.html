@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>InstaClone - Home</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+    }
+
+        input:focus, textarea:focus {
+    outline: none;
+    border-color: #6d28d2;
+    box-shadow: 0 0 0 1px #6d28d2;
+  }
+
+
+
+    /* Custom Scrollbar Styles */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: #f3f4f6; /* light gray */
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: #6d28d2; /* theme color */
+    border-radius: 9999px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background-color: #4c1d95; /* darker on hover */
+  }
+
+
+  </style>
+</head>
+<body class="bg-gray-100 text-gray-800 custom-scrollbar overflow-y-scroll h-64 " >
+
+  <div class="flex">
+
+    {% include 'sidebar.html' %}
+
+
+
+    <!-- Main Content -->
+    <main class="flex-1 ml-0 md:ml-64 p-4 md:p-8 max-w-2xl mx-auto w-full">
+
+     <div class="flex space-x-4 overflow-x-auto mb-6">
+
+      <a href="{% url 'story_upload' %}">
+  <div class="flex flex-col items-center relative group">
+    <!-- Story Circle -->
+    <div class="w-16 h-16 rounded-full bg-gradient-to-tr from-[#6d28d2] to-purple-400 p-[2px]">
+      <img src="{{ user.profile.profile_image.url }}" class="rounded-full w-full h-full object-cover" />
+    </div>
+
+    <!-- Username -->
+    <span class="text-xs mt-2">{{ user.username }}</span>
+
+    <!-- Plus Icon (for upload) -->
+    <div class="absolute bottom-3 right-0 bg-white rounded-full p-1 shadow-md">
+      <i data-lucide="plus" class="w-4 h-4 text-[#6d28d2]"></i>
+    </div>
+  </div>
+</a>
+
+    
+  {% for story in stories %}
+    <a href="{% url 'view_story' story.id %}">
+      <div class="flex flex-col items-center">
+        <div class="w-16 h-16 rounded-full bg-gradient-to-tr from-[#6d28d2] to-purple-400 p-[2px]">
+        <img src="{{ story.profile_image }}" class="rounded-full w-full h-full object-cover" />
+
+        </div>
+        <span class="text-xs mt-2">{{ story.user.username }}</span>
+      </div>
+    </a>
+  {% endfor %}
+</div>
+
+{% for post in posts %}
+  <!-- Post -->
+  <div class="bg-white rounded-xl shadow-md mb-8 max-w-md">
+    <!-- Top Info -->
+    <div class="flex items-center px-4 py-3">
+      <img src="{{ post.user.profile.profile_image.url }}" class="w-10 h-10 rounded-full mr-3"/>
+      <div>
+        <p class="font-semibold">{{ post.user.username }}</p>
+        <p class="text-xs text-gray-500">{{ post.created_at|timesince }} ago</p>
+      </div>
+    </div>
+
+    <!-- Post Image -->
+    <div class="w-full aspect-square overflow-hidden">
+      <img src="{{ post.post_file.url }}" class="w-full h-full object-cover"/>
+    </div>
+
+    <!-- Post Actions + Caption -->
+    <div class="px-4 py-3">
+      <div class="flex gap-4 text-gray-600 text-xl mb-2">
+        <!-- Like, Comment, Share Icons -->
+           <!-- Like Button -->
+  <form action="{% url 'like_toggle' %}" method="get">
+    <input type="hidden" name="post_id" value="{{ post.id }}">
+    
+    {% if request.user in post.likes.all %}
+      <!-- Liked: Filled Purple Heart -->
+      <button type="submit" class="text-[#6d28d2]">
+        <i data-lucide="heart" class="w-6 h-6 fill-[#6d28d2]"></i>
+      </button>
+    {% else %}
+      <!-- Not Liked: Border Only Heart -->
+      <button type="submit" class="text-[#6d28d2]">
+        <i data-lucide="heart" class="w-6 h-6"></i>
+      </button>
+    {% endif %}
+  </form>
+
+        <i data-lucide="message-circle" class="w-6 h-6 cursor-pointer hover:text-[#6d28d2]"></i>
+        <i data-lucide="send" class="w-6 h-6 cursor-pointer hover:text-[#6d28d2]"></i>
+      </div>
+      <p><span class="font-semibold">{{ post.user.username }}</span> {{ post.caption }}</p>
+    </div>
+  </div>
+{% endfor %}
+
+
+    </main>
+  </div>
+
+  <div class="custom-scrollbar overflow-y-scroll h-64">
+  <!-- Your scrollable content -->
+</div>
+
+
+<script>
+      lucide.createIcons();
+
+</script>
+  
+
+</body>
+</html>

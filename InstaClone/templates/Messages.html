@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>InstaClone - Messages</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+    }
+  </style>
+</head>
+<body class="bg-gray-100">
+
+
+  {% include 'sidebar.html' %}
+
+  <!-- Main Content -->
+  <div class="md:ml-60">
+    <!-- Header -->
+    <header class="bg-white shadow-md px-6 py-4 flex justify-between items-center">
+      <h1 class="text-xl font-bold text-purple-700">Messages</h1>
+      <button class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-full transition">New Message</button>
+    </header>
+
+    <!-- Online Users -->
+    <section class="bg-white shadow-sm px-6 py-4 flex space-x-5 overflow-x-auto">
+      <!-- Example Online User -->
+      <template id="user-template">
+        <div class="flex flex-col items-center text-center">
+          <div class="relative">
+            <img src="https://i.pravatar.cc/60?img=1" class="w-14 h-14 rounded-full border-2 border-purple-500" />
+            <span class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></span>
+          </div>
+          <p class="text-xs text-gray-600 mt-1">Name</p>
+        </div>
+      </template>
+      <script>
+        const users = ['Harry', 'Lara', 'Sam', 'Ella', 'Mike'];
+        const section = document.querySelector('section');
+        const template = document.getElementById('user-template');
+
+        users.forEach((name, i) => {
+          const clone = template.content.cloneNode(true);
+          const img = clone.querySelector('img');
+          const p = clone.querySelector('p');
+          img.src = `https://i.pravatar.cc/60?img=${i + 1}`;
+          p.textContent = name;
+          section.appendChild(clone);
+        });
+      </script>
+    </section>
+
+    <!-- Chat List -->
+    <main class="px-6 py-4 space-y-4 overflow-y-auto">
+      <!-- Message Box -->
+       <a href="chat.html">
+        <div class="bg-white p-4 rounded-xl shadow-md flex items-center justify-between hover:bg-gray-50 transition cursor-pointer">
+        <div class="flex items-center gap-4">
+          <img src="https://i.pravatar.cc/40?img=4" class="w-12 h-12 rounded-full" />
+          <div>
+            <p class="font-semibold text-gray-800">harry_coder</p>
+            <p class="text-sm text-gray-500 truncate w-60">Hey, are we still on for tonight?</p>
+          </div>
+        </div>
+        <div class="text-right">
+          <p class="text-xs text-gray-400 mb-1">2m ago</p>
+          <span class="text-xs bg-purple-600 text-white px-2 py-1 rounded-full">3</span>
+        </div>
+      </div>
+       </a>
+
+      <div class="bg-white p-4 rounded-xl shadow-md flex items-center justify-between hover:bg-gray-50 transition cursor-pointer">
+        <div class="flex items-center gap-4">
+          <img src="https://i.pravatar.cc/40?img=5" class="w-12 h-12 rounded-full" />
+          <div>
+            <p class="font-semibold text-gray-800">lara_dev</p>
+            <p class="text-sm text-gray-500 truncate w-60">I sent you the file. Check email.</p>
+          </div>
+        </div>
+        <div class="text-right">
+          <p class="text-xs text-gray-400 mb-1">10m ago</p>
+          <span class="text-xs bg-purple-600 text-white px-2 py-1 rounded-full">1</span>
+        </div>
+      </div>
+
+      <div class="bg-white p-4 rounded-xl shadow-md flex items-center justify-between hover:bg-gray-50 transition cursor-pointer">
+        <div class="flex items-center gap-4">
+          <img src="https://i.pravatar.cc/40?img=6" class="w-12 h-12 rounded-full" />
+          <div>
+            <p class="font-semibold text-gray-800">mark_ai</p>
+            <p class="text-sm text-gray-500 truncate w-60">Let’s catch up soon!</p>
+          </div>
+        </div>
+        <div class="text-right">
+          <p class="text-xs text-gray-400 mb-1">1h ago</p>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    lucide.createIcons();
+  </script>
+</body>
+</html>

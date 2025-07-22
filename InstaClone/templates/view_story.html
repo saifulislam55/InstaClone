@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>View Story</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background-color: #000;
+      color: white;
+      font-family: 'Poppins', sans-serif;
+    }
+    .fade-in {
+      animation: fadeIn 0.7s ease-in-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body class="flex items-center justify-center min-h-screen px-4">
+
+  <div class="relative w-full max-w-md fade-in">
+    <!-- Story Image -->
+    <div class="relative rounded-xl overflow-hidden shadow-xl border-4 border-[#6d28d2]">
+      <img src="{{ story.image.url }}" alt="Story" class="w-full h-[520px] object-cover" />
+
+      <!-- Overlay -->
+      <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent z-10"></div>
+
+      <!-- Top Bar -->
+      <div class="absolute top-3 left-3 right-3 z-20 flex justify-between items-center">
+        <!-- User Info -->
+        <div class="flex items-center space-x-3">
+          <img src="{{ story.profile_image }}" class="w-10 h-10 rounded-full border-2 border-white" />
+          <div>
+            <p class="font-semibold text-white text-sm">{{ story.user.username }}</p>
+            <p class="text-xs text-gray-300">{{ story.created_at|timesince }} ago</p>
+          </div>
+        </div>
+
+        <!-- Close Button -->
+        <a href="{% url 'home' %}" class="text-white hover:text-gray-300 transition">
+          <i data-lucide="x" class="w-6 h-6"></i>
+        </a>
+      </div>
+
+      <!-- Progress Bar -->
+      <div class="absolute top-0 left-0 right-0 h-1 bg-white/30 z-30">
+        <div class="h-full bg-[#6d28d2] animate-[progress_5s_linear_forwards] rounded"></div>
+      </div>
+
+      <!-- Caption -->
+      {% if story.caption %}
+        <div class="absolute bottom-3 left-3 right-3 z-20">
+          <div class="bg-black/60 px-4 py-3 rounded-lg">
+            <p class="text-sm text-white">{{ story.caption }}</p>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <script>
+    lucide.createIcons();
+  </script>
+
+  <style>
+    @keyframes progress {
+      0% { width: 0%; }
+      100% { width: 100%; }
+    }
+    
+
+  </style>
+  <script>
+  setTimeout(() => {
+    window.location.href = "{% url 'home' %}";
+  }, 5000);
+</script>
+
+</body>
+</html>
